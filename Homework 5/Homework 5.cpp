@@ -434,6 +434,57 @@ void task_12(int N) {
     cout << "Последовательность: " << max_subsequence << endl;
 }
 
+void print_permutation(int* balls, int n, int& count) {
+    bool flag = false;
+    
+    // Вывод массива и проверка на условие задачи
+    for (int i = 0; i < n; ++i) {
+        cout << balls[i] << " ";
+        if (balls[i] == i + 1) {
+            flag = true;
+        }
+    }
+
+    // Ведение подсчёта при соблюдении условия
+    if (flag) {
+        count++;
+    }
+    cout << endl;
+}
+    
+
+void perestanovka(int* balls, int m, int n, int& count) {
+    // Вывод уникальных перестановок
+    if (m == n) {
+        print_permutation(balls, n, count);
+        return;
+    }
+
+    // Создание новых перестановок
+    for (int i = m; i <= n; ++i) {
+        swap(balls[i - 1], balls[m - 1]);
+        perestanovka(balls, m + 1, n, count);
+        swap(balls[i - 1], balls[m - 1]);
+    }
+}
+
+int task_13(int N) {
+    // Создание массива с шаириками и заполнение этого массива
+    int* balls = new int[N];
+    for (int i = 0; i < N; i++) {
+        balls[i] = i + 1;
+    }
+
+    // Запуск перестановок
+    int count = 0;
+    perestanovka(balls, 1, N, count);
+
+    // Освобождение памяти
+    delete[] balls;
+
+    return count;
+}
+
 int main()
 {
     setlocale(LC_ALL, "rus");
@@ -567,6 +618,19 @@ int main()
         }
         int N = stoi(input);
         task_12(N);
+    }
+    else if (number == 13) {
+        // Шарики
+        string input;
+        cout << "Введите N: ";
+        cin >> input;
+        if (!is_number(input)) {
+            cout << "Неправильный ввод!" << endl;
+            return 0;
+        }
+        int N = stoi(input);
+        int answer = task_13(N);
+        cout << "Кол-во ситуаций: " << answer << endl;
     }
     cout << endl;
     main();
