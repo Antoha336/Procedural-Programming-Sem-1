@@ -8,8 +8,19 @@
 
 using namespace std;
 
+int main();
+
 double log_base(double number, double base) {
     return log(number) / log(base);
+}
+
+void is_correct() {
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+        cout << "Неправильный ввод!" << '\n' << endl;
+        main();
+    }
 }
 
 bool is_number(string number) {
@@ -112,14 +123,71 @@ int task_1_2(int a, int b) {
 }
 
 
-string task_2(int number) {
-    string result = "";
-    for (int i = 2; i <= number; i++) {
-        if (is_trivial_number(i)) {
-            result += to_string(i) + " ";
+void task_2(double number) {
+    int size = (number / log(number)) * 1.2;
+    int* trivial_numbers = new int[size];
+    trivial_numbers[0] = 2;
+
+    cout << "Простые числа: 2 ";
+    int count = 1;
+    for (int i = 3; i <= number; i += 2) {
+        bool flag = true;
+        for (int j = 0; j < count; j++) {
+            if (i % trivial_numbers[j] == 0) {
+                flag = false;
+                break;
+            }
+        }
+        
+        if (flag) {
+            trivial_numbers[count] = i;
+            cout << trivial_numbers[count] << " ";
+            count++;
         }
     }
-    return result;
+
+    
+    for (int i = 0; i < size; ++i) {
+        if (trivial_numbers[i] != 0) {
+            
+        }
+    }
+
+    delete[] trivial_numbers;
+}
+
+void task_2_1(double number) {
+    bool* trivial_numbers = new bool[number + 1];
+    for (int i = 0; i < number + 1; i++) {
+        trivial_numbers[i] = false;
+    }
+    trivial_numbers[2] = true;
+
+    int count = 1;
+    for (int i = 3; i < number + 1; i += 2) {
+        bool flag = true;
+        for (int j = 0; j < count; j++) {
+            if (trivial_numbers[j]  and i % j == 0) {
+                flag = false;
+                break;
+            }
+        }
+
+        if (flag) {
+            trivial_numbers[i] = true;
+            count++;
+        }
+    }
+
+    cout << "Простые числа: ";
+    for (int i = 0; i < number + 1; ++i) {
+        if (trivial_numbers[i]) {
+            cout << i << " ";
+        }
+        
+    }
+
+    delete[] trivial_numbers;
 }
 
 int* task_3() {
@@ -128,6 +196,7 @@ int* task_3() {
 
     cout << "Введите текст для записи в файл (<exit> для завершения ввода): " << endl;
     while (getline(cin, content)) {
+        is_correct();
         if (content == "exit") {
             break;
         }
@@ -137,6 +206,7 @@ int* task_3() {
 
     cout << "Введите слово, которое хотите найти в текстовом файле: ";
     cin >> word;
+    is_correct();
 
     ifstream file("task_3.txt");
     int line = 0, index;
@@ -171,6 +241,7 @@ void task_6() {
     int k = 0;
     double x, sum = 0, ar = 0;
     cin >> input;
+    is_correct();
     while (input != "exit") {
         if (!is_number(input)) {
             cout << "Неправильное число!" << endl;
@@ -182,6 +253,7 @@ void task_6() {
         ar = sum / k;
         cout << "Введено чисел: " << k << " Сумма: " << sum << " Сред. арифметическое: " << ar << endl;
         cin >> input;
+        is_correct();
     } 
 }
 
@@ -213,6 +285,37 @@ void task_7(int N, int base) {
     file.close();
 
     ofstream finish_file("task_7_after.txt");
+    for (int i = 0; i < N; i++) {
+        finish_file << numbers[i] << endl;
+    }
+    new_file.close();
+
+    delete[] numbers;
+}
+
+void task_7_1(int N, int base) {
+    int number;
+    string content;
+    ofstream new_file("task_7_1_before.txt");
+
+    srand(time(0));
+    for (int i = 0; i < N; i++) {
+        number = rand() % 0xFFFF + 1;
+        new_file << hex << number << endl;
+    }
+    new_file.close();
+
+    int i = 0;
+    string* numbers = new string[N];
+    ifstream file("task_7_1_before.txt");
+    while (getline(file, content)) {
+        number = stoi(content, nullptr, 16);
+        numbers[i] = convert(number, base);
+        i++;
+    }
+    file.close();
+
+    ofstream finish_file("task_7_1_after.txt");
     for (int i = 0; i < N; i++) {
         finish_file << numbers[i] << endl;
     }
@@ -310,7 +413,8 @@ void task_10(int N) {
     for (int i = 0; i < N; ++i) {
         delete[] b[i];
     }
-    delete[] a, b;
+    delete[] a;
+    delete[] b;
 }
 
 void print_matrix(int** matrix, int rows, int cols) {
@@ -343,9 +447,10 @@ void task_11() {
     // Заполнение матрицы A
     for (int i = 0; i < M; i++) {
         for (int j = 0; j < N; j++) {
-            int input;
-            cin >> input;
-            A[i][j] = input;
+            int number;
+            cin >> number;
+            is_correct();
+            A[i][j] = number;
         }
     }
 
@@ -397,7 +502,11 @@ void task_11() {
         delete[] D[i];
         delete[] E[i];
     }
-    delete[] A, B, C, D, E;
+    delete[] A;
+    delete[] B;
+    delete[] C;
+    delete[] D;
+    delete[] E;
 }
 
 void task_12(int N) {
@@ -491,29 +600,26 @@ int main()
     int number;
     cout << "Введите № задания: ";
     cin >> number;
+    is_correct();
+
     cout << endl;
     if (number == 1) {
-        string input_1, input_2;
+        int number_1, number_2;
         cout << "Введите первое число: ";
-        cin >> input_1;
+        cin >> number_1;
+        is_correct();
         cout << "Введите второе число: ";
-        cin >> input_2;
-        if (!is_number(input_1) or !is_number(input_2)) {
-            cout << "Неправильный ввод!";
-            return 0;
-        }
-        cout << "Наибольший общий делитель (делениями): " << task_1_1(stoi(input_1), stoi(input_2)) << endl;
-        cout << "Наибольший общий делитель (вычитаниями): " << task_1_2(stoi(input_1), stoi(input_2)) << endl;
+        cin >> number_2;
+        is_correct();
+        cout << "Наибольший общий делитель (делениями): " << task_1_1(number_1, number_2) << endl;
+        cout << "Наибольший общий делитель (вычитаниями): " << task_1_2(number_1, number_2) << endl;
     }
     else if (number == 2) {
-        string input;
-        cout << "Введите число: ";
-        cin >> input;
-        if (!is_number(input)) {
-            cout << "Неправильный ввод!";
-            return 0;
-        }
-        cout << "Простые числа: " << task_2(stoi(input)) << endl;
+        int number;
+        cout << "Введите число N: ";
+        cin >> number;
+        is_correct();
+        task_2(number);
     }
     else if (number == 3) {
         int* index = task_3();
@@ -530,8 +636,10 @@ int main()
         string text, under_string;
         cout << "Введите строку: ";
         cin >> text;
+        is_correct();
         cout << "Введите подстроку: ";
         cin >> under_string;
+        is_correct();
         int index = task_4(text, under_string);
         if (index != -1) {
             cout << "Подстрока найдена, позиция первого символа: " << index << endl;
@@ -541,33 +649,26 @@ int main()
         }
     }
     else if (number == 5) {
-        string input;
+        int number;
         cout << "Введите x: ";
-        cin >> input;
-        if (!is_number(input)) {
-            cout << "Неправильный ввод!";
-            return 0;
-        }
-        int x = stoi(input);
+        cin >> number;
+        is_correct();
+
         cout << fixed << setprecision(6);
-        cout << "Сумма: " << task_5(x) << endl;
+        cout << "Сумма: " << task_5(number) << endl;
     }
     else if (number == 6) {
         cout << "Обработка последовательности дробных чисел. После ввода каждого числа нажимайте <Enter>" << endl;
         task_6();
     }
     else if (number == 7) {
-        string input_1, input_2;
+        int N, base;
         cout << "Введите число N: ";
-        cin >> input_1;
+        cin >> N;
+        is_correct();
         cout << "Введите систему счисления: ";
-        cin >> input_2;
-        if (!is_number(input_1) or !is_number(input_2)) {
-            cout << "Неправильный ввод!";
-            return 0;
-        }
-        int N = stoi(input_1);
-        int base = stoi(input_2);
+        cin >> base;
+        is_correct();
 
         if (2 > base or base > 9) {
             cout << "Система счисления должна быть в пределах от двочиной до девятеричной" << endl;
@@ -581,26 +682,18 @@ int main()
     }
     else if (number == 9) {
         // Задачи сортировки #43
-        string input;
+        int N;
         cout << "Введите N: ";
-        cin >> input;
-        if (!is_number(input)) {
-            cout << "Неправильный ввод!" << endl;
-            return 0;
-        }
-        int N = stoi(input);
+        cin >> N;
+        is_correct();
         task_9(N);
     }
     else if (number == 10) {
         // Двумерные массивы #56
-        string input;
+        int N;
         cout << "Введите N: ";
-        cin >> input;
-        if (!is_number(input)) {
-            cout << "Неправильный ввод!" << endl;
-            return 0;
-        }
-        int N = stoi(input);
+        cin >> N;
+        is_correct();
         task_10(N);
     }
     else if (number == 11) {
@@ -609,26 +702,18 @@ int main()
     }
     else if (number == 12) {
         // Переборные задачи #88
-        string input;
+        int N;
         cout << "Введите N: ";
-        cin >> input;
-        if (!is_number(input)) {
-            cout << "Неправильный ввод!" << endl;
-            return 0;
-        }
-        int N = stoi(input);
+        cin >> N;
+        is_correct();
         task_12(N);
     }
     else if (number == 13) {
         // Шарики
-        string input;
+        int N;
         cout << "Введите N: ";
-        cin >> input;
-        if (!is_number(input)) {
-            cout << "Неправильный ввод!" << endl;
-            return 0;
-        }
-        int N = stoi(input);
+        cin >> N;
+        is_correct();
         int answer = task_13(N);
         cout << "Кол-во ситуаций: " << answer << endl;
     }
